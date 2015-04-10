@@ -23,8 +23,9 @@ import sphinx
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 PROJECT_PATH = os.path.abspath(CUR_PATH + '/../')
 PACKAGE_PATH = os.path.abspath(CUR_PATH + '/../boltons/')
-sys.path.insert(0, PROJECT_PATH)
-sys.path.insert(0, PACKAGE_PATH)
+# sys.path.insert(0, PROJECT_PATH)
+# sys.path.insert(0, PACKAGE_PATH)
+# sys.path.insert(0, os.path.abspath('..'))
 
 
 def get_mod_stats():
@@ -39,7 +40,8 @@ def get_mod_stats():
     for _, mod_name, _ in pkgutil.iter_modules([PACKAGE_PATH]):
         if not mod_name.endswith('utils'):
             continue
-        mod = __import__(mod_name)
+        print("mod_name =", mod_name)
+        mod = __import__("boltons.{}".format(mod_name))
         types, funcs = get_module_callables(mod, ignore=ignore)
         if not len(types) and not len(funcs):
             continue
@@ -48,7 +50,7 @@ def get_mod_stats():
         tot_func_count += len(funcs)
 
     ret = (mod_count, tot_type_count, tot_func_count)
-    print ('==== %s modules ==== %s types ==== %s funcs ====' % ret)
+    print('==== %s modules ==== %s types ==== %s funcs ====' % ret)
     return ret
 
 B_MOD_COUNT, B_TYPE_COUNT, B_FUNC_COUNT = get_mod_stats()
@@ -118,7 +120,7 @@ intersphinx_mapping = {'python': ('https://docs.python.org/2.7', None)}
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if not on_rtd: # only import and set the theme if we're building docs locally
+if not on_rtd:  # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]

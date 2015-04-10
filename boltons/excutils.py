@@ -150,7 +150,7 @@ class _DeferredLine(object):
         self.filename = filename
         self.lineno = lineno
         module_globals = module_globals or {}
-        self.module_globals = dict([(k, v) for k, v in module_globals.items()
+        self.module_globals = dict([(k, v) for k, v in list(module_globals.items())
                                     if k in ('__name__', '__loader__')])
 
     def __eq__(self, other):

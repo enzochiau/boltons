@@ -86,7 +86,7 @@ def parse_timedelta(text):
             unit_key = _PARSE_TD_KW_MAP[unit]
         except KeyError:
             raise ValueError('invalid time unit %r, expected one of %r'
-                             % (unit, _PARSE_TD_KW_MAP.keys()))
+                             % (unit, list(_PARSE_TD_KW_MAP.keys())))
         try:
             value = float(value)
         except ValueError:

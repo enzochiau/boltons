@@ -113,9 +113,9 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
 
     # Validate the field names.  At the user's option, either generate an error
     # message or automatically replace the field name with a valid name.
-    if isinstance(field_names, basestring):
+    if isinstance(field_names, str):
         field_names = field_names.replace(',', ' ').split()
-    field_names = map(str, field_names)
+    field_names = list(map(str, field_names))
     if rename:
         seen = set()
         for index, name in enumerate(field_names):
@@ -159,7 +159,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
     class_definition = _namedtuple_tmpl.format(**fmt_kw)
 
     if verbose:
-        print class_definition
+        print(class_definition)
 
     # Execute the template string in a temporary namespace and support
     # tracing utilities by setting a value for frame.f_globals['__name__']
@@ -169,7 +169,7 @@ def namedtuple(typename, field_names, verbose=False, rename=False):
                      _property=property,
                      _tuple=tuple)
     try:
-        exec class_definition in namespace
+        exec(class_definition, namespace)
     except SyntaxError as e:
         raise SyntaxError(e.message + ':\n' + class_definition)
     result = namespace[typename]
@@ -271,9 +271,9 @@ def namedlist(typename, field_names, verbose=False, rename=False):
 
     # Validate the field names.  At the user's option, either generate an error
     # message or automatically replace the field name with a valid name.
-    if isinstance(field_names, basestring):
+    if isinstance(field_names, str):
         field_names = field_names.replace(',', ' ').split()
-    field_names = map(str, field_names)
+    field_names = list(map(str, field_names))
     if rename:
         seen = set()
         for index, name in enumerate(field_names):
@@ -317,7 +317,7 @@ def namedlist(typename, field_names, verbose=False, rename=False):
     class_definition = _namedlist_tmpl.format(**fmt_kw)
 
     if verbose:
-        print class_definition
+        print(class_definition)
 
     def itemsetter(key):
         def _itemsetter(obj, value):
@@ -333,7 +333,7 @@ def namedlist(typename, field_names, verbose=False, rename=False):
                      _property=property,
                      _list=list)
     try:
-        exec class_definition in namespace
+        exec(class_definition, namespace)
     except SyntaxError as e:
         raise SyntaxError(e.message + ':\n' + class_definition)
     result = namespace[typename]
@@ -357,12 +357,12 @@ if __name__ == '__main__':
 #    p = Point(x=10, y=20)
 #    assert p == loads(dumps(p))
 
-    from cPickle import loads, dumps
+    from pickle import loads, dumps
     MutablePoint = namedlist('MutablePoint', 'x, y', True, True)
     p = MutablePoint(x=10, y=20)
-    print p
+    print(p)
     p[0] = 11
-    print p
+    print(p)
     p.x = 12
-    print p
+    print(p)
     assert p == loads(dumps(p))

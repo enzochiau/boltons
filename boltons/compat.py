@@ -7,11 +7,11 @@ IS_PY3 = sys.version_info[0] == 3
 
 
 if IS_PY2:
-    from StringIO import StringIO
-    unicode, str, bytes, basestring = unicode, str, str, basestring
+    from io import StringIO
+    str, str, bytes, str = str, str, str, str
 elif IS_PY3:
     from io import StringIO
-    unicode, str, bytes, basestring = str, bytes, bytes, str
+    str, str, bytes, str = str, bytes, bytes, str
 else:
     raise NotImplementedError('welcome to the future, I guess. (report this)')
 
@@ -28,6 +28,6 @@ def make_sentinel(name='_MISSING', var_name=None):
         if var_name:
             def __reduce__(self):
                 return self.var_name
-        def __nonzero__(self):
+        def __bool__(self):
             return False
     return Sentinel()

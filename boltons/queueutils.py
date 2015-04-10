@@ -34,13 +34,13 @@ from bisect import insort
 import itertools
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _REMOVED = make_sentinel(var_name='_REMOVED')
 except ImportError:
     _REMOVED = object()
 
 try:
-    from listutils import BList
+    from .listutils import BList
     # see BarrelList docstring for notes
 except ImportError:
     BList = list
@@ -77,7 +77,7 @@ class BasePriorityQueue(object):
         self._counter = itertools.count()
         self._get_priority = kw.pop('priority_key', self._default_priority_key)
         if kw:
-            raise TypeError('unexpected keyword arguments: %r' % kw.keys())
+            raise TypeError('unexpected keyword arguments: %r' % list(kw.keys()))
 
     @staticmethod
     def _push_entry(backend, entry):

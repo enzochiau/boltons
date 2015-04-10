@@ -20,8 +20,8 @@ __url__ = 'https://github.com/mahmoud/boltons'
 __license__ = 'BSD'
 
 
-if sys.version_info >= (3,):
-    raise NotImplementedError("boltons Python 3 support en route to your location")
+# if sys.version_info >= (3,):
+#     raise NotImplementedError("boltons Python 3 support en route to your location")
 
 
 setup(name='boltons',

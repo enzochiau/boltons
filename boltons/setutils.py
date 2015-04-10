@@ -17,7 +17,7 @@ from collections import MutableSet
 import operator
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _MISSING = make_sentinel(var_name='_MISSING')
 except ImportError:
     _MISSING = object()
@@ -423,49 +423,49 @@ class IndexedSet(MutableSet):
 # Tests of a manner
 
 if __name__ == '__main__':
-    zero2nine = IndexedSet(range(10))
-    five2nine = zero2nine & IndexedSet(range(5, 15))
+    zero2nine = IndexedSet(list(range(10)))
+    five2nine = zero2nine & IndexedSet(list(range(5, 15)))
     x = IndexedSet(five2nine)
     x |= set([10])
-    print zero2nine, five2nine, x, x[-1]
-    print zero2nine ^ five2nine
-    print x[:3], x[2:4:-1]
+    print(zero2nine, five2nine, x, x[-1])
+    print(zero2nine ^ five2nine)
+    print(x[:3], x[2:4:-1])
 
     try:
-        thou = IndexedSet(range(1000))
-        print thou.pop(), thou.pop()
-        print thou.pop(499), thou.pop(499),
-        print [thou[i] for i in range(495, 505)]
-        print 'thou hath', len(thou), 'items'
+        thou = IndexedSet(list(range(1000)))
+        print(thou.pop(), thou.pop())
+        print(thou.pop(499), thou.pop(499), end=' ')
+        print([thou[i] for i in range(495, 505)])
+        print('thou hath', len(thou), 'items')
         while len(thou) > 600:
             dead_idx_len = len(thou.dead_indices)
             dead_idx_count = thou._dead_index_count
             thou.pop(0)
             new_dead_idx_len = len(thou.dead_indices)
             if new_dead_idx_len < dead_idx_len:
-                print 'thou hath culled',
-                print dead_idx_count, 'indices'
-        print 'thou hath', len(thou), 'items'
-        print 'thou hath', thou._dead_index_count, 'dead indices'
-        print 'exposing _MISSING:', any([thou[i] is _MISSING for i in range(len(thou))])
-        thou &= IndexedSet(range(500, 503))
-        print thou
+                print('thou hath culled', end=' ')
+                print(dead_idx_count, 'indices')
+        print('thou hath', len(thou), 'items')
+        print('thou hath', thou._dead_index_count, 'dead indices')
+        print('exposing _MISSING:', any([thou[i] is _MISSING for i in range(len(thou))]))
+        thou &= IndexedSet(list(range(500, 503)))
+        print(thou)
 
         from os import urandom
         import time
-        big_set = IndexedSet(range(100000))
+        big_set = IndexedSet(list(range(100000)))
         rands = [ord(r) for r in urandom(len(big_set))]
         start_time, start_size = time.time(), len(big_set)
         while len(big_set) > 10000:
             if len(big_set) % 10000 == 0:
-                print len(big_set) / 10000
+                print(len(big_set) / 10000)
             rand = rands.pop()
             big_set.pop(rand)
             big_set.pop(-rand)
         end_time, end_size = time.time(), len(big_set)
-        print
-        print 'popped %s items in %s seconds' % (start_size - end_size,
-                                                 end_time - start_time)
+        print()
+        print('popped %s items in %s seconds' % (start_size - end_size,
+                                                 end_time - start_time))
     except Exception as e:
         import pdb;pdb.post_mortem()
         raise

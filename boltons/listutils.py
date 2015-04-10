@@ -14,7 +14,7 @@ from math import log as math_log
 from itertools import chain, islice
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _MISSING = make_sentinel(var_name='_MISSING')
 except ImportError:
     _MISSING = object()
@@ -322,7 +322,7 @@ class SplayList(list):
 # Tests and tuning
 if __name__ == '__main__':
     def test_splay():
-        splay = SplayList(xrange(10))
+        splay = SplayList(range(10))
         splay.swap(0, 9)
         assert splay[0] == 9
         assert splay[-1] == 0
@@ -339,22 +339,22 @@ if __name__ == '__main__':
         bl.insert(0, 0)
         bl.insert(1, 1)
         bl.insert(0, -1)
-        bl.extend(range(100000))
+        bl.extend(list(range(100000)))
         bl._balance_list(0)
         bl.pop(50000)
 
-        rands = [ord(i) * x for i, x in zip(os.urandom(1024), range(1024))]
+        rands = [ord(i) * x for i, x in zip(os.urandom(1024), list(range(1024)))]
         bl2 = BarrelList(rands)
         bl2.sort()
-        print bl2[:10]
-        print bl2[:-10:-1]
+        print(bl2[:10])
+        print(bl2[:-10:-1])
 
-        bl3 = BarrelList(range(int(1e5)))
+        bl3 = BarrelList(list(range(int(1e5))))
         for i in range(10000):
             bl3.insert(0, bl3.pop(len(bl3) / 2))
 
         del bl3[10:5000]
-        bl3[:20:2] = range(0, -10, -1)
+        bl3[:20:2] = list(range(0, -10, -1))
         import pdb;pdb.set_trace()
 
     _TUNE_SETUP = """\
@@ -383,12 +383,12 @@ if __name__ == '__main__':
                 all_times[size_factor].append(tottime)
             min_time = round(min(all_times[size_factor]), 3)
             min_times[size_factor] = min_time
-            print size_factor, min_time, step
+            print(size_factor, min_time, step)
             if min_time > (min_times[old_size_factor] + 0.002):
                 step = -step / 2
             old_size_factor = size_factor
             size_factor += step
-        print tottime
+        print(tottime)
 
     try:
         tune()  # main()

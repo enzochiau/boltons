@@ -20,7 +20,7 @@ frame of the callstack, including values of locals and neighboring
 lines of code.
 """
 
-from __future__ import print_function
+
 
 import re
 import sys
@@ -61,7 +61,7 @@ class Callpoint(object):
 
     def __init__(self, module_name, module_path, func_name,
                  lineno, lasti, line=None):
-        self.func_name = func_name
+        self.__name__ = func_name
         self.lineno = lineno
         self.module_name = module_name
         self.module_path = module_path
@@ -129,7 +129,7 @@ class Callpoint(object):
         """
         ret = '  File "%s", line %s, in %s\n' % (self.module_path,
                                                  self.lineno,
-                                                 self.func_name)
+                                                 self.__name__)
         if self.line:
             ret += '    %s\n' % (str(self.line).strip(),)
         return ret
@@ -437,7 +437,7 @@ class ContextualCallpoint(Callpoint):
 
     def _populate_local_reprs(self, f_locals):
         local_reprs = self.local_reprs
-        for k, v in f_locals.items():
+        for k, v in list(f_locals.items()):
             try:
                 local_reprs[k] = repr(v)
             except:
@@ -570,7 +570,7 @@ def _some_str(value):
     except Exception:
         pass
     try:
-        value = unicode(value)
+        value = str(value)
         return value.encode("ascii", "backslashreplace")
     except Exception:
         pass
@@ -676,7 +676,7 @@ class ParsedException(object):
         Args:
             tb_str (str): The traceback text (:class:`unicode` or UTF-8 bytes)
         """
-        if not isinstance(tb_str, unicode):
+        if not isinstance(tb_str, str):
             tb_str = tb_str.decode('utf-8')
         tb_lines = tb_str.lstrip().splitlines()
 
@@ -726,7 +726,7 @@ ParsedTB = ParsedException  # legacy alias
 
 
 if __name__ == '__main__':
-    import cStringIO
+    import io
 
     builtin_exc_hook = sys.excepthook
     fix_print_exception()
@@ -735,8 +735,8 @@ if __name__ == '__main__':
     def test():
         raise ValueError('yay fun')
 
-    fake_stderr1 = cStringIO.StringIO()
-    fake_stderr2 = cStringIO.StringIO()
+    fake_stderr1 = io.StringIO()
+    fake_stderr2 = io.StringIO()
     sys.stderr = fake_stderr1
 
     try:
@@ -766,7 +766,7 @@ if __name__ == '__main__':
 
     assert new_exc_hook_res == builtin_exc_hook_res
 
-    FAKE_TB_STR = u"""
+    FAKE_TB_STR = """
 Traceback (most recent call last):
   File "example.py", line 2, in <module>
     plarp

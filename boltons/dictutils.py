@@ -34,17 +34,17 @@ thanks to `Mark Williams`_ for all his help.
 .. _Mark Williams: https://github.com/markrwilliams
 """
 
-from itertools import izip
+
 from collections import KeysView, ValuesView, ItemsView
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _MISSING = make_sentinel(var_name='_MISSING')
 except ImportError:
     _MISSING = object()
 
 
-PREV, NEXT, KEY, VALUE, SPREV, SNEXT = range(6)
+PREV, NEXT, KEY, VALUE, SPREV, SNEXT = list(range(6))
 
 
 __all__ = ['MultiDict', 'OMD', 'OrderedMultiDict']
@@ -236,7 +236,7 @@ class OrderedMultiDict(dict):
             for k, v in E.iteritems(multi=True):
                 self_add(k, v)
         elif hasattr(E, 'keys'):
-            for k in E.keys():
+            for k in list(E.keys()):
                 self[k] = E[k]
         else:
             seen = set()
@@ -257,11 +257,11 @@ class OrderedMultiDict(dict):
         instead of overwriting them.
         """
         if E is self:
-            iterator = iter(E.items())
+            iterator = iter(list(E.items()))
         elif isinstance(E, OrderedMultiDict):
             iterator = E.iteritems(multi=True)
         elif hasattr(E, 'keys'):
-            iterator = ((k, E[k]) for k in E.keys())
+            iterator = ((k, E[k]) for k in list(E.keys()))
         else:
             iterator = E
 
@@ -290,7 +290,7 @@ class OrderedMultiDict(dict):
         elif isinstance(other, OrderedMultiDict):
             selfi = self.iteritems(multi=True)
             otheri = other.iteritems(multi=True)
-            for (selfk, selfv), (otherk, otherv) in izip(selfi, otheri):
+            for (selfk, selfv), (otherk, otherv) in zip(selfi, otheri):
                 if selfk != otherk or selfv != otherv:
                     return False
             if not(next(selfi, _MISSING) is _MISSING
@@ -378,7 +378,7 @@ class OrderedMultiDict(dict):
                 yield curr[KEY], curr[VALUE]
                 curr = curr[NEXT]
         else:
-            for key in self.iterkeys():
+            for key in self.keys():
                 yield key, self[key]
 
     def iterkeys(self, multi=False):
@@ -448,7 +448,7 @@ class OrderedMultiDict(dict):
         OrderedMultiDict([('o', 'd'), ('l', 'l'), ('e', 'o'), ('h', 'w')])
         """
         cls = self.__class__
-        return cls(sorted(self.iteritems(), key=key, reverse=reverse))
+        return cls(sorted(iter(self.items()), key=key, reverse=reverse))
 
     def inverted(self):
         """Returns a new :class:`OrderedMultiDict` with values and keys
@@ -496,7 +496,7 @@ class OrderedMultiDict(dict):
         return list(self.iteritems(multi=multi))
 
     def __iter__(self):
-        return self.iterkeys()
+        return iter(self.keys())
 
     def __reversed__(self):
         root = self.root
@@ -721,9 +721,9 @@ if __name__ == '__main__':
         size = 100
         redun = 5
 
-        _rng = range(size)
-        _rng_redun = range(size/redun) * redun
-        _pairs = zip(_rng_redun, _rng)
+        _rng = list(range(size))
+        _rng_redun = list(range(size/redun)) * redun
+        _pairs = list(zip(_rng_redun, _rng))
 
         omd = OMD(_pairs)
         for multi in (True, False):
@@ -791,9 +791,9 @@ if __name__ == '__main__':
             omd = OMD(items)
             iomd = omd.inverted()
             assert len(omd) == len(iomd)
-            assert len(omd.items()) == len(iomd.items())
+            assert len(list(omd.items())) == len(list(iomd.items()))
 
-            for val in omd.values():
+            for val in list(omd.values()):
                 assert val in iomd
 
     def test_poplast():
@@ -809,8 +809,8 @@ if __name__ == '__main__':
             for ik, ok in zip(reversed(od), reversed(omd)):
                 assert ik == ok
 
-        r100 = range(100)
-        omd = OMD(zip(r100, r100))
+        r100 = list(range(100))
+        omd = OMD(list(zip(r100, r100)))
         for i in r100:
             omd.add(i, i)
         r100.reverse()

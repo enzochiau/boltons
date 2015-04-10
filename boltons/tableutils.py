@@ -23,9 +23,10 @@ import cgi
 import types
 from itertools import islice
 from collections import Sequence, Mapping, MutableSequence
+import collections
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _MISSING = make_sentinel(var_name='_MISSING')
 except ImportError:
     _MISSING = object()
@@ -53,12 +54,12 @@ __all__ = ['Table']
 
 def to_text(obj, maxlen=None):
     try:
-        text = unicode(obj)
+        text = str(obj)
     except:
         try:
-            text = unicode(repr(obj))
+            text = str(repr(obj))
         except:
-            text = unicode(object.__repr__(obj))
+            text = str(object.__repr__(obj))
     if maxlen and len(text) > maxlen:
         text = text[:maxlen - 3] + '...'
         # TODO: inverse of ljust/rjust/center
@@ -70,9 +71,9 @@ def escape_html(obj, maxlen=None):
     return cgi.escape(text, quote=True)
 
 
-_DNR = set([types.NoneType, types.BooleanType, types.IntType, types.LongType,
-            types.ComplexType, types.FloatType, types.StringType,
-            types.UnicodeType, types.NotImplementedType, types.SliceType,
+_DNR = set([type(None), bool, int, int,
+            complex, float, bytes,
+            str, type(NotImplemented), slice,
             types.FunctionType, types.MethodType, types.BuiltinFunctionType,
             types.GeneratorType])
 
@@ -94,7 +95,7 @@ class DictInputType(InputType):
         return isinstance(obj, Mapping)
 
     def guess_headers(self, obj):
-        return obj.keys()
+        return list(obj.keys())
 
     def get_entry(self, obj, headers):
         return [obj.get(h) for h in headers]
@@ -117,7 +118,7 @@ class ObjectInputType(InputType):
                 # seen on greenlet: `run` shows in dir() but raises
                 # AttributeError. Also properties misbehave.
                 continue
-            if callable(val):
+            if isinstance(val, collections.Callable):
                 continue
             headers.append(attr)
         return headers
@@ -521,16 +522,16 @@ if __name__ == '__main__':
         t2 = Table.from_dict(data_dicts[0])
         t3 = Table.from_dict(data_dicts)
         t3.extend([[3, 'Kurt Rose'], [4]])
-        print t1
-        print t2
-        print t2.to_html()
-        print t3
-        print t3.to_html()
-        print t3.to_text()
+        print(t1)
+        print(t2)
+        print(t2.to_html())
+        print(t3)
+        print(t3.to_html())
+        print(t3.to_text())
 
         import re
         t4 = Table.from_object(re.compile(''))
-        print t4.to_text()
+        print(t4.to_text())
         import pdb;pdb.set_trace()
 
     main()

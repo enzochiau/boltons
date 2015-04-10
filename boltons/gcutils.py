@@ -130,8 +130,8 @@ if __name__ == '__main__':
     tt = TestType()
 
     def _test_main():
-        print 'TestTypes:', len(get_all(TestType))
-        print 'bools:', len(get_all(bool))
+        print('TestTypes:', len(get_all(TestType)))
+        print('bools:', len(get_all(bool)))
         import pdb;pdb.set_trace()
 
     def _test_main2():
@@ -140,10 +140,10 @@ if __name__ == '__main__':
 
         start = time.time()
         with toggle_gc_postcollect:
-            x = [{} for x in xrange(COUNT)]
-        print time.time() - start, 'secs without gc'
+            x = [{} for x in range(COUNT)]
+        print(time.time() - start, 'secs without gc')
 
         start = time.time()
-        x = [{} for x in xrange(COUNT)]
-        print time.time() - start, 'secs with gc'
+        x = [{} for x in range(COUNT)]
+        print(time.time() - start, 'secs with gc')
     _test_main()

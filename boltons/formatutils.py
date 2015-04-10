@@ -299,7 +299,7 @@ class DeferredValue(object):
         return str(self.get_value())
 
     def __unicode__(self):
-        return unicode(self.get_value())
+        return str(self.get_value())
 
     def __repr__(self):
         return repr(self.get_value())
@@ -363,7 +363,7 @@ if __name__ == '__main__':
         results = []
         for t in _TEST_TMPLS:
             res = tokenize_format_str(t)
-            print ''.join([str(r) for r in res])
+            print(''.join([str(r) for r in res]))
             results.append(res)
         return results
 

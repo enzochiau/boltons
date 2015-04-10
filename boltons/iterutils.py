@@ -11,7 +11,8 @@ following are based on examples in itertools docs.
 """
 import itertools
 
-from compat import basestring  # TODO
+from .compat import str  # TODO
+import collections
 
 
 def is_iterable(obj):
@@ -45,7 +46,7 @@ def is_scalar(obj):
     >>> is_scalar('hello')
     True
     """
-    return not is_iterable(obj) or isinstance(obj, basestring)
+    return not is_iterable(obj) or isinstance(obj, str)
 
 
 def split(src, sep=None, maxsplit=None):
@@ -103,7 +104,7 @@ def split_iter(src, sep=None, maxsplit=None):
             yield [src]
             return
 
-    if callable(sep):
+    if isinstance(sep, collections.Callable):
         sep_func = sep
     elif not is_scalar(sep):
         sep = frozenset(sep)
@@ -185,11 +186,11 @@ def chunked_iter(src, size, **kw):
         do_fill = False
         fill_val = None
     if kw:
-        raise ValueError('got unexpected keyword arguments: %r' % kw.keys())
+        raise ValueError('got unexpected keyword arguments: %r' % list(kw.keys()))
     if not src:
         return
     postprocess = lambda chk: chk
-    if isinstance(src, basestring):
+    if isinstance(src, str):
         postprocess = lambda chk, _sep=type(src)(): _sep.join(chk)
     cur_chunk = []
     i = 0
@@ -232,11 +233,11 @@ def windowed_iter(src, size):
     tees = itertools.tee(src, size)
     try:
         for i, t in enumerate(tees):
-            for _ in xrange(i):
+            for _ in range(i):
                 next(t)
     except StopIteration:
-        return itertools.izip([])
-    return itertools.izip(*tees)
+        return zip([])
+    return zip(*tees)
 
 
 def bucketize(src, key=None):
@@ -264,7 +265,7 @@ def bucketize(src, key=None):
         raise TypeError('expected an iterable')
     if key is None:
         key = bool
-    if not callable(key):
+    if not isinstance(key, collections.Callable):
         raise TypeError('expected callable key function')
 
     ret = {}
@@ -331,9 +332,9 @@ def unique_iter(src, key=None):
         raise TypeError('expected an iterable, not %r' % type(src))
     if key is None:
         key_func = lambda x: x
-    elif callable(key):
+    elif isinstance(key, collections.Callable):
         key_func = key
-    elif isinstance(key, basestring):
+    elif isinstance(key, str):
         key_func = lambda x: getattr(x, key, x)
     else:
         raise TypeError('"key" expected a string or callable, not %r' % key)

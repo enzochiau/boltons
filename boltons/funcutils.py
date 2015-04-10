@@ -8,6 +8,7 @@ import sys
 import functools
 from types import MethodType, FunctionType
 from itertools import chain
+import collections
 
 
 def get_module_callables(mod, ignore=None):
@@ -16,7 +17,7 @@ def get_module_callables(mod, ignore=None):
     callable. *mod* can be a string name of a module in
     :data:`sys.modules` or the module instance itself.
     """
-    if isinstance(mod, basestring):
+    if isinstance(mod, str):
         mod = sys.modules[mod]
     types, funcs = {}, {}
     for attr_name in dir(mod):
@@ -34,7 +35,7 @@ def get_module_callables(mod, ignore=None):
             continue
         if isinstance(attr, type):
             types[attr_name] = attr
-        elif callable(attr):
+        elif isinstance(attr, collections.Callable):
             funcs[attr_name] = attr
     return types, funcs
 
@@ -47,7 +48,7 @@ def mro_items(type_obj):
     ['__class__', '__doc__', '__doc__', 'denominator', 'imag', 'numerator', 'real']
     """
     # TODO: handle slots?
-    return chain.from_iterable([ct.__dict__.iteritems()
+    return chain.from_iterable([iter(ct.__dict__.items())
                                 for ct in type_obj.__mro__])
 
 
@@ -87,11 +88,11 @@ def copy_function(orig, copy_dict=True):
             instance. Defaults to ``True``.
     """
     # TODO: Python 3 compat
-    ret = FunctionType(orig.func_code,
-                       orig.func_globals,
-                       name=orig.func_name,
-                       argdefs=orig.func_defaults,
-                       closure=orig.func_closure)
+    ret = FunctionType(orig.__code__,
+                       orig.__globals__,
+                       name=orig.__name__,
+                       argdefs=orig.__defaults__,
+                       closure=orig.__closure__)
     if copy_dict:
         ret.__dict__.update(orig.__dict__)
     return ret
@@ -181,11 +182,11 @@ if __name__ == '__main__':
             pass
 
         g = SubGreeter('hello')
-        print g.greet()
-        print g.native_greet()
-        print g.partial_greet()
-        print g.cached_partial_greet()
-        print CachedInstancePartial(g.greet, excitement='s')()
+        print(g.greet())
+        print(g.native_greet())
+        print(g.partial_greet())
+        print(g.cached_partial_greet())
+        print(CachedInstancePartial(g.greet, excitement='s')())
 
         def callee():
             return 1

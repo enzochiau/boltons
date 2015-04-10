@@ -36,6 +36,7 @@ Learn more about `caching algorithms on Wikipedia
 __all__ = ['LRI', 'LRU']
 
 from collections import deque
+import collections
 
 try:
     from _thread import RLock
@@ -49,7 +50,7 @@ except:
             pass
 
 try:
-    from compat import make_sentinel
+    from .compat import make_sentinel
     _MISSING = make_sentinel(var_name='_MISSING')
     _KWARG_MARK = make_sentinel(var_name='_KWARG_MARK')
 except ImportError:
@@ -57,7 +58,7 @@ except ImportError:
     _KWARG_MARK = object()
 
 
-PREV, NEXT, KEY, VALUE = range(4)   # names for the link fields
+PREV, NEXT, KEY, VALUE = list(range(4))   # names for the link fields
 DEFAULT_MAX_SIZE = 128
 
 
@@ -106,7 +107,7 @@ class LRU(dict):
         self.root = root
         self.lock = RLock()
 
-        if on_miss is not None and not callable(on_miss):
+        if on_miss is not None and not isinstance(on_miss, collections.Callable):
             raise TypeError('expected on_miss to be a callable'
                             ' (or None), not %r' % on_miss)
         self.on_miss = on_miss
@@ -217,8 +218,8 @@ class LRU(dict):
         if E is self:
             return
         setitem = self.__setitem__
-        if callable(getattr(E, 'keys', None)):
-            for k in E.keys():
+        if isinstance(getattr(E, 'keys', None), collections.Callable):
+            for k in list(E.keys()):
                 setitem(k, E[k])
         else:
             for k, v in E:
@@ -292,8 +293,8 @@ class LRI(dict):
         if E is self:
             return
         setitem = self.__setitem__
-        if callable(getattr(E, 'keys', None)):
-            for k in E.keys():
+        if isinstance(getattr(E, 'keys', None), collections.Callable):
+            for k in list(E.keys()):
                 setitem(k, E[k])
         else:
             for k, v in E:
@@ -436,7 +437,7 @@ if __name__ == '__main__':
         lru['bye'] = 1
         lru['bye']
         lru.get('hi')
-        print lru
+        print(lru)
         del lru['bye']
 
         import pdb;pdb.set_trace()

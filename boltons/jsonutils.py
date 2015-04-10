@@ -159,7 +159,7 @@ class JSONLIterator(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         """Yields one :class:`dict` loaded with :func:`json.loads`, advancing
         the file object by one line. Raises :exc:`StopIteration` upon reaching
         the end of the file (or beginning, if ``reverse`` was set to ``True``.
@@ -190,4 +190,4 @@ if __name__ == '__main__':
     for blocksize in (1, 4, 11, 4096):
         _test_reverse_iter_lines('_tmp_nl.txt', blocksize)
 
-    print list(JSONLIterator(open('_tmp_jsonl.jsonl'), reverse=True))
+    print(list(JSONLIterator(open('_tmp_jsonl.jsonl'), reverse=True)))

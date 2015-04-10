@@ -380,7 +380,7 @@ def _get_conv_func(attr_name):
     return stats_helper
 
 
-for attr_name, attr in Stats.__dict__.items():
+for attr_name, attr in list(Stats.__dict__.items()):
     if isinstance(attr, _StatsProperty):
         func = _get_conv_func(attr_name)
         func.__doc__ = attr.func.__doc__
@@ -393,13 +393,13 @@ del func
 
 
 if __name__ == '__main__':
-    da = Stats(range(20))
-    print da.mean
+    da = Stats(list(range(20)))
+    print(da.mean)
 
     import random
 
     def get_pt(dist):
-        vals = [dist() for x in xrange(10000)]
+        vals = [dist() for x in range(10000)]
         pt = pearson_type(vals)
         return pt
 
@@ -410,6 +410,6 @@ if __name__ == '__main__':
         # pt = get_pt(dist=lambda: random.betavariate(2, 3))  # expect 1, beta
         # pt = get_pt(dist=lambda: random.expovariate(0.2))  # expect 3, beta
         pt = get_pt(dist=lambda: random.uniform(0.0, 10.0))  # gets 2
-        print 'pearson type:', pt
+        print('pearson type:', pt)
 
         import pdb;pdb.set_trace()
